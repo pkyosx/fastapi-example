@@ -20,6 +20,8 @@ You can search the above question in source code for the answers. (ex. search "[
 
 
 # How to run local test
+Install [docker-compose](https://docs.docker.com/compose/install/) before continue the following step.
+
 This will build container and lead you into container's shell
 ```
 ./setup_ut.sh
