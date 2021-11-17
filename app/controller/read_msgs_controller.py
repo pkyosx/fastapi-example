@@ -1,7 +1,7 @@
 from pydantic.fields import Field
 from util.fastapi_util import BaseSchema
 from controller.base_controller import UserControllerBase
-from model.msg import MsgModel
+from model.msg_model import MsgModel
 
 class ReadMsgsRequest(BaseSchema):
     limit: int = Field(100, ge=1, le=100)

@@ -26,7 +26,8 @@ class CommonAPIRoute(APIRoute):
         async def custom_route_handler(request: Request) -> Response:
             try:
                 return await original_route_handler(request)
-            except RequestValidationError as exc:
+            except RequestValidationError as exc: # [Q1] How to customize our input schema error (status_code=422)
+                # [Q6] How to print request body when error happends
                 # await request.body() might get RuntimeError("Stream consumed")
                 # if body is presented, it will cached in request._body
                 logger.error(f"RequestValidationError Request body: {getattr(request, '_body', '')}")
@@ -40,9 +41,11 @@ class CommonAPIRoute(APIRoute):
                              "code": HttpErrors.INVALID_PARAM.code},
                 )
             except WebAppException as exc:
+                # [Q6] How to print request body when error happends
                 # await request.body() might get RuntimeError("Stream consumed")
                 # if body is presented, it will cached in request._body
                 logger.error(f"WebAppException Request body: {getattr(request, '_body', '')}")
+                # [Q7] How to print the entire exception chain when wanted
                 if exc.show_stack:
                     logger.exception(f"WebAppException: {exc}")
                 else:
@@ -52,6 +55,7 @@ class CommonAPIRoute(APIRoute):
                     content={"msg": exc.msg, "code": exc.code},
                 )
             except Exception as exc:
+                # [Q6] How to print request body when error happends
                 # await request.body() might get RuntimeError("Stream consumed")
                 # if body is presented, it will cached in request._body
                 logger.error(f"Interal Server Error Request body: {getattr(request, '_body', '')}")
@@ -64,7 +68,7 @@ class CommonAPIRoute(APIRoute):
 
         return custom_route_handler
 
-
+# [Q4] How to do if I want schema to be inheritable but don't want child class to overwrite parent's any attributes
 class DisableFieldOverwrite(type(BaseModel)):
     def __new__(mcls, name, bases, class_dict):
         defined_fields = set()
@@ -86,6 +90,7 @@ class BaseSchema(BaseModel, metaclass=DisableFieldOverwrite):
 
         @staticmethod
         def schema_extra(schema, model):
+            # [Q3] How to define a property that can be string or null in openapi
             # Patch for field that allows None
             # We use openapi 3.1 spec: https://stackoverflow.com/questions/48111459/how-to-define-a-property-that-can-be-string-or-null-in-openapi-swagger
             # Some discussion on pydantic hook: https://github.com/samuelcolvin/pydantic/issues/1270

@@ -6,7 +6,7 @@ from app.util.auth_util import Identity
 from util.auth_util import JWTAuthenticator
 from util.auth_util import Role
 from util.config_util import Config
-from model.msg import MsgModel
+from model.msg_model import MsgModel
 logger = logging.getLogger(__name__)
 
 

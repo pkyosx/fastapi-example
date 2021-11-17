@@ -11,7 +11,7 @@ user_api_router = APIRouter(tags=["USER"], route_class=CommonAPIRoute)
 
 @user_api_router.post("/api/user/read_msgs", **ReadMsgsController.module_args())
 def login(
-    user: Identity = Depends(ReadMsgsController.authenticate),
+    identity: Identity = Depends(ReadMsgsController.authenticate),
     payload: ReadMsgsController.request_model = Body(...)
 ):
-    return ReadMsgsController.run(user, payload)
+    return ReadMsgsController.run(identity, payload)

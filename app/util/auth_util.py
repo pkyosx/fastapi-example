@@ -1,11 +1,9 @@
-import logging
 import time
-from util.enum_util import EnumBase
 from dataclasses import dataclass
 
-import jwt
+from util.enum_util import EnumBase
 
-logger = logging.getLogger(__name__)
+import jwt
 
 
 class Role(EnumBase):

@@ -6,4 +6,6 @@ services:
     build: ${PWD}
     volumes:
     - ${PWD}/app:/app
+    ports:
+    - 8888:80
     entrypoint: "bash -c 'sleep infinity'"

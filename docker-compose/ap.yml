@@ -1,9 +1,0 @@
-version: '3'
-
-services:
-  ap-service:
-    hostname: ap-service
-    build: ${PWD}
-    ports:
-    - 8888:80
-    entrypoint: "bash -c 'sleep infinity'"

@@ -33,17 +33,19 @@ class HttpError:
 
 
 class HttpErrors(EnumBase):
-    # GENERAL_ERROR
+    # GENERAL_ERROR (400)
+    # I suggest centralize all other application errors to status_code=400.
+    # We could create different 'code' in string format to distinguish them.
     INVALID_PARAM = HttpError(status_code=HttpErrorStatusCode.GENERAL_ERROR, code='INVALID_PARAM')
+    # OTHER_APP_ERROR = HttpError(status_code=HttpErrorStatusCode.GENERAL_ERROR, code='OTHER_APP_ERROR')
 
-    # AUTHENTICATION_ERROR
+    # AUTHENTICATION_ERROR (401)
     UNAUTHENTICATED = HttpError(status_code=HttpErrorStatusCode.AUTHENTICATION_ERROR, code='UNAUTHENTICATED')
-    UNRECOGNIZED_USER = HttpError(status_code=HttpErrorStatusCode.AUTHENTICATION_ERROR, code='UNRECOGNIZED_USER')
 
-    # AUTHORIZATION_ERROR
+    # AUTHORIZATION_ERROR (403)
     UNAUTHORIZED = HttpError(status_code=HttpErrorStatusCode.AUTHORIZATION_ERROR, code='UNAUTHORIZED')
 
-    # UNEXPECTED_ERROR
+    # UNEXPECTED_ERROR (500)
     INTERNAL_SERVER_ERROR = HttpError(status_code=HttpErrorStatusCode.UNEXPECTED_ERROR, code='INTERNAL_SERVER_ERROR')
 
 
@@ -61,6 +63,7 @@ HTTP_STATUS_TO_CODES = init_http_status_to_codes()
 HTTP_STATUS_TO_NAME = {v: k for v, k in HttpErrorStatusCode.value_to_key().items()}
 
 
+# [Q2] How to generate error response for openapi in a clean way
 def gen_error_responses(name: str, http_errors: list[HttpError] = None):
     status_to_codes = {}
     responses = {}

@@ -1,7 +1,7 @@
 from pydantic.fields import Field
 from util.fastapi_util import BaseSchema
 from controller.base_controller import AdminControllerBase
-from model.msg import MsgModel
+from model.msg_model import MsgModel
 
 class LeaveMsgRequest(BaseSchema):
     msg: str = Field(...)

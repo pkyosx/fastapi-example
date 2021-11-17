@@ -49,6 +49,7 @@ class ControllerBase(abc.ABC):
     @classmethod
     def module_args(cls):
         assert "responses" not in cls._module_args(), "responses should be defined via Errors class"
+        # [Q2] How to generate error response for openapi in a clean way
         # Error responses will be generated automatically according to Errors
         # You can check gen_error_responses for detail
         return recursive_merge_dict(to_dict=dict(responses=gen_error_responses(name=cls.__name__,
@@ -75,6 +76,7 @@ class AuthenticateControllerBase(ControllerBase):
         try:
             return JWTAuthenticator.load_access_token(key=Config.auth_secret_key, access_token=access_jwt)
         except:
+            # [Q7] How to print the entire exception chain when wanted
             raise cls.Errors.UNAUTHENTICATED("Invalid JWT", show_stack=True)
 
 

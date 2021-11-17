@@ -59,6 +59,7 @@ def init_app():
             method = request.method
             alias = endpoint_to_path.get(request.scope['endpoint'])
             status_code = response.status_code
+            # [Q5] How to get '/path/{param}' in the middleware for metrics
             logger.info(f"[Metrics] {method=} {alias=} {status_code=}")
         return response
 
@@ -89,9 +90,11 @@ def init_app():
         if app.openapi_schema:
             return app.openapi_schema
         openapi_schema = get_openapi(title="Sample FastAPI service",
+                                     version="1.0",
                                      description="Sample FastAPI service",
                                      routes=app.routes)
 
+        # [Q1] How to customize our input schema error (status_code=422)
         # look for the error 422 and removes it
         for url in openapi_schema["paths"]:
             for method in openapi_schema["paths"][url]:
