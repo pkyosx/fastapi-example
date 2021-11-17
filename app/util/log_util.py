@@ -1,6 +1,8 @@
 import logging
 import contextvars
 
+# [Q8] How to create log context and add trace id into it
+# We use contextvars under fastapi for request context.
 log_ctx_holder = contextvars.ContextVar('log_ctx')
 
 
@@ -20,6 +22,7 @@ def clear_log_ctx():
 
 
 def init_log():
+    # [Q8] How to create log context and add trace id into it
     logging.config.dictConfig({
         "version": 1,
         "disable_existing_loggers": False,

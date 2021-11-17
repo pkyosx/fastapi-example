@@ -1,4 +1,7 @@
+# Because Enum does not allow inheritance, we created a util here and .to_enum() could be used to convert it to Enum.
+
 class EnumBase(object):
+    # All upper_case member will be treated as Enum variable
     @classmethod
     def __is_enum(cls, attr):
         return attr[0].isupper()

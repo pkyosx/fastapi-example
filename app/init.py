@@ -42,6 +42,7 @@ def init_app():
         trace_id = request.headers.get("x-trace-id", str(uuid.uuid4()))
         request.state.trace_id = trace_id
 
+        # [Q8] How to create log context and add trace id into it
         clear_log_ctx()
         update_log_ctx("TRACE_ID", trace_id)
 

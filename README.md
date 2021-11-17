@@ -6,6 +6,7 @@
 - [Q5] How to get '/path/{param}' in the middleware for metrics
 - [Q6] How to print request body when error happends
 - [Q7] How to print the entire exception chain when wanted
+- [Q8] How to create log context and add trace id into it
 
 You can search the above question in source code for the answers. (ex. search "[Q1]")
 
