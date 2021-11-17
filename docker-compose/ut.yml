@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  ut-service:
+    hostname: ut-service
+    build: ${PWD}
+    volumes:
+    - ${PWD}/app:/app
+    entrypoint: "bash -c 'sleep infinity'"
