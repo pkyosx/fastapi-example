@@ -29,7 +29,7 @@ class LoginController(ControllerBase):
         return {"response_model": cls.response_model}
 
     @classmethod
-    def _run(cls, data: request_model):
+    async def _run(cls, data: request_model):
         if data.name in Config.auth_admins and data.password == Config.auth_admins[data.name]:
             return {
                 "access_token": JWTAuthenticator.dump_access_token(Config.auth_secret_key,

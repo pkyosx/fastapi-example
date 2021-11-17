@@ -38,7 +38,7 @@ class ControllerBase(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def _run(cls, *args, **kwargs):
+    async def _run(cls, *args, **kwargs):
         raise NotImplementedError
 
     @classmethod
@@ -58,8 +58,8 @@ class ControllerBase(abc.ABC):
                                     from_dict=cls._module_args() or {})
 
     @classmethod
-    def run(cls, *args, **kwargs):
-        return cls._run(*args, **kwargs)
+    async def run(cls, *args, **kwargs):
+        return await cls._run(*args, **kwargs)
 
 
 class AuthenticateControllerBase(ControllerBase):
@@ -85,10 +85,10 @@ class UserControllerBase(AuthenticateControllerBase):
         UNAUTHORIZED = HttpErrors.UNAUTHORIZED
 
     @classmethod
-    def run(cls, identity: Identity, payload):
+    async def run(cls, identity: Identity, payload):
         if not identity.is_user():
             raise cls.Errors.UNAUTHORIZED("Is not user")
-        return cls._run(payload)
+        return await cls._run(payload)
 
 
 class AdminControllerBase(AuthenticateControllerBase):
@@ -96,8 +96,8 @@ class AdminControllerBase(AuthenticateControllerBase):
         UNAUTHORIZED = HttpErrors.UNAUTHORIZED
 
     @classmethod
-    def run(cls, identity: Identity, payload):
+    async def run(cls, identity: Identity, payload):
         if not identity.is_admin():
             raise cls.Errors.UNAUTHORIZED("Is not admin")
-        return cls._run(payload)
+        return await cls._run(payload)
 

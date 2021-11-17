@@ -19,5 +19,5 @@ class ReadMsgsController(UserControllerBase):
         return {"response_model": cls.response_model}
 
     @classmethod
-    def _run(cls, data: request_model):
+    async def _run(cls, data: request_model):
         return {"msgs": MsgModel.read_msgs(data.limit)}

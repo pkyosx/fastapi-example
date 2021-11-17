@@ -19,6 +19,6 @@ class LeaveMsgController(AdminControllerBase):
         return {"response_model": cls.response_model}
 
     @classmethod
-    def _run(cls, data: request_model):
+    async def _run(cls, data: request_model):
         MsgModel.leave_msg(data.msg)
         return {"result": "ok"}
