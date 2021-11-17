@@ -89,7 +89,6 @@ def init_app():
         if app.openapi_schema:
             return app.openapi_schema
         openapi_schema = get_openapi(title="Sample FastAPI service",
-                                     version=os.environ.get("DOCKER_IMAGE_BUILD_VERSION", ""),
                                      description="Sample FastAPI service",
                                      routes=app.routes)
 
