@@ -9,8 +9,8 @@ admin_api_router = APIRouter(tags=["ADMIN"], route_class=CommonAPIRoute)
 
 
 @admin_api_router.post("/api/admin/leave_msg", **LeaveMsgController.module_args())
-async def login(
+def login(
     identity: Identity = Depends(LeaveMsgController.authenticate),
     payload: LeaveMsgController.request_model = Body(...)
 ):
-    return await LeaveMsgController.run(identity, payload)
+    return LeaveMsgController.run(identity, payload)

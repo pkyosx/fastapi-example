@@ -8,3 +8,11 @@ class TestAppInit:
 
         resp = client.get("/api_doc/redoc")
         assert resp.status_code == 200
+
+    def test_app_init__healthcheck(self, client):
+        resp = client.get("/")
+        assert resp.status_code == 200
+
+    def test_app_init__metrics(self, client):
+        resp = client.get("/metrics")
+        assert resp.status_code == 200

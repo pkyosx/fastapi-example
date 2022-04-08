@@ -37,5 +37,5 @@ class TestLeaveMsg:
     def test__authorization_error(self):
         resp = self.trigger_run(Role.USER, {"msg": "hello"})
         assert resp.status_code == 403
-        assert resp.json() == {'code': 'UNAUTHORIZED', 'msg': 'Is not admin'}
+        assert resp.json() == {'code': 'UNAUTHORIZED', 'msg': 'USER does not have WRITE_MSG'}
 

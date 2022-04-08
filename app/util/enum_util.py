@@ -1,5 +1,8 @@
 # Because Enum does not allow inheritance, we created a util here and .to_enum() could be used to convert it to Enum.
 
+from enum import Enum
+
+
 class EnumBase(object):
     # All upper_case member will be treated as Enum variable
     @classmethod
@@ -37,17 +40,8 @@ class EnumBase(object):
         return {v: k for k, v in cls.items()}
 
     @classmethod
-    def to_enum(cls):
-        from enum import Enum
+    def to_enum(cls) -> Enum:
         if not hasattr(cls, "__enum_instance__"):
             cls.__enum_instance__ = Enum(cls.__name__, [(k, v) for k, v in cls.items()], type=str)
         return cls.__enum_instance__
 
-
-class IntEnumBase(EnumBase):
-    @classmethod
-    def to_enum(cls):
-        from enum import IntEnum
-        if not hasattr(cls, "__enum_instance__"):
-            cls.__enum_instance__ = IntEnum(cls.__name__, [(k, v) for k, v in cls.items()])
-        return cls.__enum_instance__

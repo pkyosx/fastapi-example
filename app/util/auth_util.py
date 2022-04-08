@@ -1,27 +1,34 @@
 import time
-from dataclasses import dataclass
-
-from util.enum_util import EnumBase
-
 import jwt
+
+from enum import Enum
+from dataclasses import dataclass
+from app.util.enum_util import EnumBase
+
+from app.util.fastapi_util import BaseSchema
 
 
 class Role(EnumBase):
     USER = "USER"
     ADMIN = "ADMIN"
 
+class Perm(EnumBase):
+    NONE = "NONE"
+    READ_MSG = "READ_MSG"
+    WRITE_MSG = "WRITE_MSG"
 
 @dataclass
-class Identity(object):
+class Identity:
     user: str
     role: Role.to_enum()
 
-    def is_user(self):
-        return self.role in [Role.USER, Role.ADMIN]
+    perm_mapping = {
+        Role.USER: [Perm.READ_MSG],
+        Role.ADMIN: [Perm.READ_MSG, Perm.WRITE_MSG]
+    }
 
-    def is_admin(self):
-        return self.role == Role.ADMIN
-
+    def has_permission(self, perm: Perm) -> bool:
+        return perm in self.perm_mapping[self.role]
 
 class JWTAuthenticator(object):
     ACCESS_JWT_ALGORITHM = "HS256"

@@ -1,6 +1,7 @@
 from pydantic.fields import Field
+from app.util.auth_util import Identity, Perm
 from util.fastapi_util import BaseSchema
-from controller.base_controller import AdminControllerBase
+from controller.base_controller import RbacControllerBase
 from model.msg_model import MsgModel
 
 class LeaveMsgRequest(BaseSchema):
@@ -10,15 +11,12 @@ class LeaveMsgResponse(BaseSchema):
     result: str
 
 
-class LeaveMsgController(AdminControllerBase):
+class LeaveMsgController(RbacControllerBase):
     request_model = LeaveMsgRequest
     response_model = LeaveMsgResponse
+    perm = Perm.WRITE_MSG
 
     @classmethod
-    def _module_args(cls):
-        return {"response_model": cls.response_model}
-
-    @classmethod
-    async def _run(cls, data: request_model):
-        MsgModel.leave_msg(data.msg)
-        return {"result": "ok"}
+    def run(cls, identity: Identity, payload: request_model) -> response_model:
+        MsgModel.leave_msg(payload.msg)
+        return cls.response_model(**{"result": "ok"})

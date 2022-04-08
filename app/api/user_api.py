@@ -10,8 +10,8 @@ user_api_router = APIRouter(tags=["USER"], route_class=CommonAPIRoute)
 
 
 @user_api_router.post("/api/user/read_msgs", **ReadMsgsController.module_args())
-async def login(
+def login(
     identity: Identity = Depends(ReadMsgsController.authenticate),
     payload: ReadMsgsController.request_model = Body(...)
 ):
-    return await ReadMsgsController.run(identity, payload)
+    return ReadMsgsController.run(identity, payload)

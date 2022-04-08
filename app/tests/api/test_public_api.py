@@ -2,6 +2,7 @@ import believe as B
 import json
 import logging
 import pytest
+from app.util.auth_util import Role
 from util.auth_util import JWTAuthenticator
 from util.config_util import Config
 
@@ -36,14 +37,14 @@ class TestLogin:
         assert resp.status_code == 200
         assert resp.json() == {'access_token': B.AnyStr()}
 
-        user = JWTAuthenticator.load_access_token(Config.auth_secret_key, resp.json()["access_token"])
-        assert user.is_user()
+        identity = JWTAuthenticator.load_access_token(Config.auth_secret_key, resp.json()["access_token"])
+        assert identity.role == Role.USER
 
     def test_login_success__admin(self):
         resp = self.trigger_run({"name": "admin1", "password": "admin_password1"})
         assert resp.status_code == 200
         assert resp.json() == {'access_token': B.AnyStr()}
 
-        user = JWTAuthenticator.load_access_token(Config.auth_secret_key, resp.json()["access_token"])
-        assert user.is_admin()
+        identity = JWTAuthenticator.load_access_token(Config.auth_secret_key, resp.json()["access_token"])
+        assert identity.role == Role.ADMIN
 

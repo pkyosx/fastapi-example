@@ -1,6 +1,7 @@
 from pydantic.fields import Field
+from app.util.auth_util import Identity, Perm
 from util.fastapi_util import BaseSchema
-from controller.base_controller import UserControllerBase
+from controller.base_controller import RbacControllerBase
 from model.msg_model import MsgModel
 
 class ReadMsgsRequest(BaseSchema):
@@ -10,14 +11,11 @@ class ReadMsgsResponse(BaseSchema):
     msgs: list[str]
 
 
-class ReadMsgsController(UserControllerBase):
+class ReadMsgsController(RbacControllerBase):
     request_model = ReadMsgsRequest
     response_model = ReadMsgsResponse
+    perm = Perm.READ_MSG
 
     @classmethod
-    def _module_args(cls):
-        return {"response_model": cls.response_model}
-
-    @classmethod
-    async def _run(cls, data: request_model):
-        return {"msgs": MsgModel.read_msgs(data.limit)}
+    def run(cls, identity: Identity, data: request_model) -> response_model:
+        return cls.response_model(**{"msgs": MsgModel.read_msgs(data.limit)})

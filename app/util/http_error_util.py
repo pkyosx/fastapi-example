@@ -5,7 +5,8 @@ from pydantic import create_model
 from util.enum_util import EnumBase
 
 
-class HttpErrorStatusCode(EnumBase):
+class HttpStatusCode(EnumBase):
+    OK = 200
     GENERAL_ERROR = 400
     AUTHENTICATION_ERROR = 401
     AUTHORIZATION_ERROR = 403
@@ -36,46 +37,30 @@ class HttpErrors(EnumBase):
     # GENERAL_ERROR (400)
     # I suggest centralize all other application errors to status_code=400.
     # We could create different 'code' in string format to distinguish them.
-    INVALID_PARAM = HttpError(status_code=HttpErrorStatusCode.GENERAL_ERROR, code='INVALID_PARAM')
+    INVALID_PARAM = HttpError(status_code=HttpStatusCode.GENERAL_ERROR, code='INVALID_PARAM')
     # OTHER_APP_ERROR = HttpError(status_code=HttpErrorStatusCode.GENERAL_ERROR, code='OTHER_APP_ERROR')
 
     # AUTHENTICATION_ERROR (401)
-    UNAUTHENTICATED = HttpError(status_code=HttpErrorStatusCode.AUTHENTICATION_ERROR, code='UNAUTHENTICATED')
+    UNAUTHENTICATED = HttpError(status_code=HttpStatusCode.AUTHENTICATION_ERROR, code='UNAUTHENTICATED')
 
     # AUTHORIZATION_ERROR (403)
-    UNAUTHORIZED = HttpError(status_code=HttpErrorStatusCode.AUTHORIZATION_ERROR, code='UNAUTHORIZED')
+    UNAUTHORIZED = HttpError(status_code=HttpStatusCode.AUTHORIZATION_ERROR, code='UNAUTHORIZED')
 
     # UNEXPECTED_ERROR (500)
-    INTERNAL_SERVER_ERROR = HttpError(status_code=HttpErrorStatusCode.UNEXPECTED_ERROR, code='INTERNAL_SERVER_ERROR')
-
-
-def init_http_status_to_codes():
-    result = {}
-    codes = set()
-    for http_error in HttpErrors.values():
-        assert http_error.code not in codes, f"duplicated code={http_error.code} found"
-        codes.add(http_error.code)
-        result.setdefault(http_error.status_code, set()).add(http_error.code)
-    return result
-
-
-HTTP_STATUS_TO_CODES = init_http_status_to_codes()
-HTTP_STATUS_TO_NAME = {v: k for v, k in HttpErrorStatusCode.value_to_key().items()}
+    INTERNAL_SERVER_ERROR = HttpError(status_code=HttpStatusCode.UNEXPECTED_ERROR, code='INTERNAL_SERVER_ERROR')
 
 
 # [Q2] How to generate error response for openapi in a clean way
-def gen_error_responses(name: str, http_errors: list[HttpError] = None):
+def gen_error_responses(prefix: str, http_errors: list[HttpError]):
+    http_status_to_name = {v: k for v, k in HttpStatusCode.value_to_key().items()}
     status_to_codes = {}
     responses = {}
 
     for http_error in http_errors:
         status_to_codes.setdefault(http_error.status_code, set()).add(http_error.code)
+
     for status_code, codes in status_to_codes.items():
-        if codes == HTTP_STATUS_TO_CODES[status_code]:
-            # if all status code included, share the name
-            model_name = HTTP_STATUS_TO_NAME[status_code]
-        else:
-            model_name = f"{name}_{HTTP_STATUS_TO_NAME[status_code]}"
+        model_name = f"{prefix}_{http_status_to_name[status_code]}"
         responses[status_code] = {"model": ResponsesGenerator.gen_error_model(model_name, codes)}
     return responses
 

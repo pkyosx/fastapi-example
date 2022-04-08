@@ -25,22 +25,18 @@ class LoginController(ControllerBase):
         INVALID_PARAM = HttpErrors.INVALID_PARAM
 
     @classmethod
-    def _module_args(cls):
-        return {"response_model": cls.response_model}
-
-    @classmethod
-    async def _run(cls, data: request_model):
-        if data.name in Config.auth_admins and data.password == Config.auth_admins[data.name]:
-            return {
+    def run(cls, payload: request_model) -> response_model:
+        if payload.name in Config.auth_admins and payload.password == Config.auth_admins[payload.name]:
+            return cls.response_model(**{
                 "access_token": JWTAuthenticator.dump_access_token(Config.auth_secret_key,
-                                                                   Identity(data.name, Role.ADMIN),
+                                                                   Identity(payload.name, Role.ADMIN),
                                                                    Config.auth_token_exp)
-            }
-        if data.name in Config.auth_users and data.password == Config.auth_users[data.name]:
-            return {
+            })
+        if payload.name in Config.auth_users and payload.password == Config.auth_users[payload.name]:
+            return cls.response_model(**{
                 "access_token": JWTAuthenticator.dump_access_token(Config.auth_secret_key,
-                                                                   Identity(data.name, Role.USER),
+                                                                   Identity(payload.name, Role.USER),
                                                                    Config.auth_token_exp)
-            }
+            })
         raise cls.Errors.INVALID_PARAM("User or password mismatch")
 
