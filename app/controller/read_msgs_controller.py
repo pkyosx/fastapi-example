@@ -1,8 +1,8 @@
 from pydantic.fields import Field
-from app.util.auth_util import Identity, Perm
-from util.fastapi_util import BaseSchema
 from controller.base_controller import RbacControllerBase
+from util.auth_util import Identity, Perm
 from model.msg_model import MsgModel
+from util.fastapi_util import BaseSchema
 
 class ReadMsgsRequest(BaseSchema):
     limit: int = Field(100, ge=1, le=100)

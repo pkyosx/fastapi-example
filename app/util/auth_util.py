@@ -3,9 +3,9 @@ import jwt
 
 from enum import Enum
 from dataclasses import dataclass
-from app.util.enum_util import EnumBase
+from util.enum_util import EnumBase
 
-from app.util.fastapi_util import BaseSchema
+from util.fastapi_util import BaseSchema
 
 
 class Role(EnumBase):

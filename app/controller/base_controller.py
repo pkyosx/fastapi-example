@@ -8,8 +8,8 @@ from starlette.responses import Response
 from fastapi.security.http import HTTPAuthorizationCredentials
 from fastapi.security.http import HTTPBearer
 from fastapi import Depends
-from app.util.auth_util import Perm
-from app.util.fastapi_util import BaseSchema
+from util.auth_util import Perm
+from util.fastapi_util import BaseSchema
 
 from util.auth_util import JWTAuthenticator
 from util.auth_util import Identity

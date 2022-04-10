@@ -14,9 +14,9 @@ from fastapi.responses import PlainTextResponse
 from api.public_api import public_api_router
 from api.user_api import user_api_router
 from api.admin_api import admin_api_router
-from app.util.config_util import Config
-from app.util.fastapi_util import create_openapi_schema, init_fastapi_app
-from app.util.http_error_util import WebAppException
+from util.config_util import Config
+from util.fastapi_util import create_openapi_schema, init_fastapi_app
+from util.http_error_util import WebAppException
 
 from util.http_error_util import HttpErrors
 from util.log_util import clear_log_ctx
@@ -56,7 +56,7 @@ def init_app():
 
     @app.get("/metrics", include_in_schema=False)
     def metrics():
-        from app.util.metrics_util import update_latest
+        from util.metrics_util import update_latest
         update_latest(version=Config.app_version)
         return PlainTextResponse(prometheus_client.generate_latest())
 

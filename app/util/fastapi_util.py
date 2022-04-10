@@ -15,8 +15,8 @@ from fastapi.routing import APIRoute
 from fastapi.exceptions import RequestValidationError
 from fastapi.security.http import HTTPAuthorizationCredentials
 from fastapi.security.http import HTTPBearer
-from app.util.log_util import clear_log_ctx, update_log_ctx
-from app.util.metrics_util import Metrics
+from util.log_util import clear_log_ctx, update_log_ctx
+from util.metrics_util import Metrics
 
 from util.http_error_util import HttpErrors
 from util.http_error_util import WebAppException

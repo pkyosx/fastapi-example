@@ -2,7 +2,7 @@ import believe as B
 import json
 import logging
 import pytest
-from app.util.auth_util import Identity
+from util.auth_util import Identity
 from util.auth_util import JWTAuthenticator
 from util.auth_util import Role
 from util.config_util import Config
