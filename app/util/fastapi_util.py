@@ -23,6 +23,9 @@ from util.http_error_util import WebAppException
 
 logger = logging.getLogger(__name__)
 
+class WrappedRequestValidationError(Exception):
+    def __init__(self, exc: RequestValidationError):
+        self.exc = exc
 
 class CommonAPIRoute(APIRoute):
     def get_route_handler(self) -> Callable:
@@ -31,13 +34,9 @@ class CommonAPIRoute(APIRoute):
         async def custom_route_handler(request: Request) -> Response:
             try:
                 return await original_route_handler(request)
-            except RequestValidationError as exc:
-                # await request.body() might get RuntimeError("Stream consumed")
-                # if body is presented, it will cached in request._body
+            except RequestValidationError as e:
                 logger.error(f"Error request body: {getattr(request, '_body', '')}")
-                location = exc.errors()[0]["loc"][0]
-                param = ".".join(str(x) for x in exc.errors()[0]["loc"][1:])
-                raise HttpErrors.INVALID_PARAM(f"Invalid {location} param: {param}")
+                raise WrappedRequestValidationError(e)
             except Exception:
                 # await request.body() might get RuntimeError("Stream consumed")
                 # if body is presented, it will cached in request._body
@@ -185,6 +184,13 @@ def init_fastapi_app(
 
         try:
             response = await call_next(request)
+        except WrappedRequestValidationError as exc:
+            location = exc.exc.errors()[0]["loc"][0]
+            param = ".".join(str(x) for x in exc.exc.errors()[0]["loc"][1:])
+            response = JSONResponse(
+                status_code=HttpErrors.INVALID_PARAM.status_code,
+                content={"msg": f"Invalid {location} param: {param}", "code": HttpErrors.INVALID_PARAM.code},
+            )
         except WebAppException as exc:
             if exc.show_stack:
                 logger.exception(f"WebAppException: {exc}")
