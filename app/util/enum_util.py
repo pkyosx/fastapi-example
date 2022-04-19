@@ -42,6 +42,7 @@ class EnumBase(object):
     @classmethod
     def to_enum(cls) -> Enum:
         if not hasattr(cls, "__enum_instance__"):
-            cls.__enum_instance__ = Enum(cls.__name__, [(k, v) for k, v in cls.items()], type=str)
+            cls.__enum_instance__ = Enum(
+                cls.__name__, [(k, v) for k, v in cls.items()], type=str
+            )
         return cls.__enum_instance__
-

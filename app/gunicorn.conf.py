@@ -1,7 +1,7 @@
-bind = '0.0.0.0:80'
+bind = "0.0.0.0:80"
 worker_class = "uvicorn.workers.UvicornWorker"
 threads = 100
-loglevel = 'info'
+loglevel = "info"
 
 
 def post_fork(server, worker):

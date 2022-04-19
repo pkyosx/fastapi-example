@@ -5,19 +5,19 @@ ARG GITHUB_TOKEN
 ENV GITHUB_TOKEN $GITHUB_TOKEN
 
 WORKDIR /build
-ADD /app/requirements.txt /build
+COPY /app/requirements.txt /build
 
 # Create virtual environment and use it
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-RUN pip install -r /build/requirements.txt
+RUN pip install --no-cache-dir -r /build/requirements.txt
 
 # second stage
 FROM python:3.10-slim
 
 WORKDIR /app
-ADD /app /app
+COPY /app /app
 
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"

@@ -1,23 +1,13 @@
 import abc
 import logging
-from typing import Callable
 
-from pydantic import Field
-from starlette.responses import JSONResponse
-from starlette.responses import Response
-from fastapi.security.http import HTTPAuthorizationCredentials
-from fastapi.security.http import HTTPBearer
 from fastapi import Depends
-from util.auth_util import Perm
-from util.fastapi_util import BaseSchema
-
-from util.auth_util import JWTAuthenticator
-from util.auth_util import Identity
+from fastapi.security.http import HTTPAuthorizationCredentials, HTTPBearer
+from util.auth_util import Identity, JWTAuthenticator, Perm
 from util.config_util import Config
 from util.enum_util import EnumBase
-from util.http_error_util import HttpErrors
-from util.http_error_util import gen_error_responses
-
+from util.fastapi_util import BaseSchema
+from util.http_error_util import HttpErrors, gen_error_responses
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +35,9 @@ class ControllerBase(abc.ABC):
         # [Q2] How to generate error response for openapi in a clean way
         # Error responses will be generated automatically according to Errors
         # You can check gen_error_responses for detail
-        return DEFAULT_MODULE_ARGS | {"responses": gen_error_responses(cls.__name__, cls.Errors.values())}
+        return DEFAULT_MODULE_ARGS | {
+            "responses": gen_error_responses(cls.__name__, cls.Errors.values())
+        }
 
 
 class RbacControllerBase(abc.ABC):
@@ -64,17 +56,26 @@ class RbacControllerBase(abc.ABC):
         # [Q2] How to generate error response for openapi in a clean way
         # Error responses will be generated automatically according to Errors
         # You can check gen_error_responses for detail
-        return DEFAULT_MODULE_ARGS | {"responses": gen_error_responses(cls.__name__, cls.Errors.values())}
+        return DEFAULT_MODULE_ARGS | {
+            "responses": gen_error_responses(cls.__name__, cls.Errors.values())
+        }
 
     @classmethod
-    def authenticate(cls, credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer(auto_error=False))) -> Identity:
+    def authenticate(
+        cls,
+        credentials: HTTPAuthorizationCredentials = Depends(
+            HTTPBearer(auto_error=False)
+        ),
+    ) -> Identity:
         if not credentials:
             logger.error("Access JWT is missing")
             raise cls.Errors.UNAUTHENTICATED("JWT is missing")
 
         access_jwt = credentials.credentials
         try:
-            identity = JWTAuthenticator.load_access_token(key=Config.auth_secret_key, access_token=access_jwt)
+            identity = JWTAuthenticator.load_access_token(
+                key=Config.auth_secret_key, access_token=access_jwt
+            )
         except:
             # [Q7] How to print the entire exception chain when wanted
             raise cls.Errors.UNAUTHENTICATED("Invalid JWT", show_stack=True)

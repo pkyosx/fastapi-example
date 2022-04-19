@@ -1,15 +1,17 @@
-import logging
 import contextvars
+import logging
 
 # [Q8] How to create log context and add trace id into it
 # We use contextvars under fastapi for request context.
-log_ctx_holder = contextvars.ContextVar('log_ctx')
+log_ctx_holder = contextvars.ContextVar("log_ctx")
 
 
 class AddLogCtx(object):
     def filter(self, record):
         log_ctx = log_ctx_holder.get({})
-        record.log_ctx = " ".join([f"[{k}={log_ctx[k]}]" for k in sorted(log_ctx.keys())]) or "[]"
+        record.log_ctx = (
+            " ".join([f"[{k}={log_ctx[k]}]" for k in sorted(log_ctx.keys())]) or "[]"
+        )
         return True
 
 
@@ -23,29 +25,24 @@ def clear_log_ctx():
 
 def init_log():
     # [Q8] How to create log context and add trace id into it
-    logging.config.dictConfig({
-        "version": 1,
-        "disable_existing_loggers": False,
-        "filters": {
-            "add_log_ctx": {
-                "()": AddLogCtx
-            }
-        },
-        "formatters": {
-            "console": {
-                "datefmt": "%Y-%m-%d %H:%M:%S",
-                "format": "%(asctime)s,%(msecs)03d %(levelname)-5.5s %(log_ctx)s %(message)s (%(filename)s:%(lineno)d)"
-            }
-        },
-        "handlers": {
-            "console": {
-                "class": "logging.StreamHandler",
-                "formatter": "console",
-                "filters": ["add_log_ctx"]
-            }
-        },
-        "root": {
-            "handlers": ["console"],
-            "level": "INFO"
+    logging.config.dictConfig(
+        {
+            "version": 1,
+            "disable_existing_loggers": False,
+            "filters": {"add_log_ctx": {"()": AddLogCtx}},
+            "formatters": {
+                "console": {
+                    "datefmt": "%Y-%m-%d %H:%M:%S",
+                    "format": "%(asctime)s,%(msecs)03d %(levelname)-5.5s %(log_ctx)s %(message)s (%(filename)s:%(lineno)d)",
+                }
+            },
+            "handlers": {
+                "console": {
+                    "class": "logging.StreamHandler",
+                    "formatter": "console",
+                    "filters": ["add_log_ctx"],
+                }
+            },
+            "root": {"handlers": ["console"], "level": "INFO"},
         }
-    })
+    )

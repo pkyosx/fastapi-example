@@ -1,31 +1,25 @@
 import contextvars
 import logging
 import time
-from typing import Callable, Protocol
 import uuid
+from typing import Callable, Protocol
 
-from pydantic import BaseModel
-
-from fastapi import FastAPI, Request
-from fastapi import Response
-from fastapi import Depends
-
+from fastapi import FastAPI, Request, Response
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
-from fastapi.exceptions import RequestValidationError
-from fastapi.security.http import HTTPAuthorizationCredentials
-from fastapi.security.http import HTTPBearer
+from pydantic import BaseModel
+from util.http_error_util import HttpErrors, WebAppException
 from util.log_util import clear_log_ctx, update_log_ctx
 from util.metrics_util import Metrics
 
-from util.http_error_util import HttpErrors
-from util.http_error_util import WebAppException
-
 logger = logging.getLogger(__name__)
+
 
 class WrappedRequestValidationError(Exception):
     def __init__(self, exc: RequestValidationError):
         self.exc = exc
+
 
 class CommonAPIRoute(APIRoute):
     def get_route_handler(self) -> Callable:
@@ -45,6 +39,7 @@ class CommonAPIRoute(APIRoute):
 
         return custom_route_handler
 
+
 # [Q4] How to do if I want schema to be inheritable but don't want child class to overwrite parent's any attributes
 class DisableFieldOverwrite(type(BaseModel)):
     def __new__(mcls, name, bases, class_dict):
@@ -63,7 +58,7 @@ class DisableFieldOverwrite(type(BaseModel)):
 
 class BaseSchema(BaseModel, metaclass=DisableFieldOverwrite):
     class Config:
-        extra = 'forbid'
+        extra = "forbid"
 
         @staticmethod
         def schema_extra(schema, model):
@@ -71,25 +66,27 @@ class BaseSchema(BaseModel, metaclass=DisableFieldOverwrite):
             # Patch for field that allows None
             # We use openapi 3.1 spec: https://stackoverflow.com/questions/48111459/how-to-define-a-property-that-can-be-string-or-null-in-openapi-swagger
             # Some discussion on pydantic hook: https://github.com/samuelcolvin/pydantic/issues/1270
-            for prop, value in schema.get('properties', {}).items():
+            for prop, value in schema.get("properties", {}).items():
                 # retrieve right field from alias or name
                 field = [x for x in model.__fields__.values() if x.alias == prop][0]
                 if field.allow_none:
                     # only one type e.g. {'type': 'integer'}
-                    if 'type' in value:
-                        value['anyOf'] = [{'type': value.pop('type')}]
+                    if "type" in value:
+                        value["anyOf"] = [{"type": value.pop("type")}]
                     # only one $ref e.g. from other model
-                    elif '$ref' in value:
+                    elif "$ref" in value:
                         if issubclass(field.type_, BaseModel):
                             # add 'title' in schema to have the exact same behaviour as the rest
-                            value['title'] = field.type_.__config__.title or field.type_.__name__
-                        value['anyOf'] = [{'$ref': value.pop('$ref')}]
-                    elif 'allOf' in value:
-                        value['anyOf'] = [{'allOf': value.pop('allOf')}]
-                    elif 'oneOf' in value:
-                        value['anyOf'] = [{'oneOf': value.pop('oneOf')}]
-                    elif 'anyOf' in value:
-                        value['anyOf'].append({'type': 'null'})
+                            value["title"] = (
+                                field.type_.__config__.title or field.type_.__name__
+                            )
+                        value["anyOf"] = [{"$ref": value.pop("$ref")}]
+                    elif "allOf" in value:
+                        value["anyOf"] = [{"allOf": value.pop("allOf")}]
+                    elif "oneOf" in value:
+                        value["anyOf"] = [{"oneOf": value.pop("oneOf")}]
+                    elif "anyOf" in value:
+                        value["anyOf"].append({"type": "null"})
 
 
 class FastAPIPlugin(Protocol):
@@ -99,9 +96,10 @@ class FastAPIPlugin(Protocol):
     def on_after(self, request, response, exec_time, alias):
         pass
 
+
 class RequestCtx:
-    x_trace_id = contextvars.ContextVar('x_trace_id')
-    x_task_id = contextvars.ContextVar('x_task_id')
+    x_trace_id = contextvars.ContextVar("x_trace_id")
+    x_task_id = contextvars.ContextVar("x_task_id")
 
     @classmethod
     def get_x_trace_id(cls):
@@ -119,15 +117,16 @@ class RequestCtx:
     def set_x_task_id(cls, value):
         return cls.x_trace_id.set(value)
 
+
 class RequestCtxPlugin:
     def on_before(self, request):
         RequestCtx.set_x_task_id(request.headers.get("x-trace-id", str(uuid.uuid4())))
         RequestCtx.set_x_task_id(request.headers.get("x-task-id", str(uuid.uuid4())))
 
-
     def on_after(self, request, response, exec_time, alias):
         response.headers["x-trace-id"] = RequestCtx.get_x_trace_id()
         response.headers["x-task-id"] = RequestCtx.get_x_task_id()
+
 
 class LoggerPlugging:
     def on_before(self, request):
@@ -135,14 +134,23 @@ class LoggerPlugging:
         update_log_ctx("X_TRACE_ID", RequestCtx.get_x_trace_id())
         update_log_ctx("X_TASK_ID", RequestCtx.get_x_task_id())
 
-        logger.info(f"[IN] [{request.method}] {request.url.path} {request.query_params}")
-        logger.info(f'Remote: {request.client.host}, {request.url._url}, {request.headers}')
+        logger.info(
+            f"[IN] [{request.method}] {request.url.path} {request.query_params}"
+        )
+        logger.info(
+            f"Remote: {request.client.host}, {request.url._url}, {request.headers}"
+        )
 
     def on_after(self, request, response, exec_time, alias):
         if response.status_code == 200:
-            logger.info(f"[OUT] ({response.status_code}) [{request.method}] {request.url.path} ({int(exec_time * 1000)} ms)")
+            logger.info(
+                f"[OUT] ({response.status_code}) [{request.method}] {request.url.path} ({int(exec_time * 1000)} ms)"
+            )
         else:
-            logger.error(f"[OUT] ({response.status_code}) [{request.method}] {request.url.path} ({int(exec_time * 1000)} ms)")
+            logger.error(
+                f"[OUT] ({response.status_code}) [{request.method}] {request.url.path} ({int(exec_time * 1000)} ms)"
+            )
+
 
 class MetricsPlugging:
     def on_before(self, request):
@@ -151,9 +159,11 @@ class MetricsPlugging:
     def on_after(self, request, response, exec_time, alias):
         Metrics.app_api_connection_total.dec()
         if alias:
-            Metrics.app_api_latency_seconds.labels(method=request.method,
-                                                   alias=alias,
-                                                   status_code=response.status_code).observe(exec_time)
+            Metrics.app_api_latency_seconds.labels(
+                method=request.method, alias=alias, status_code=response.status_code
+            ).observe(exec_time)
+
+
 class AliasFinder:
     def __init__(self):
         self.endpoint_to_path = None
@@ -162,10 +172,13 @@ class AliasFinder:
     def get_alias(self, request):
         if len(request.app.routes) != self.num_routes:
             self.num_routes = len(request.app.routes)
-            self.endpoint_to_path = {route.endpoint: route.path for route in request.app.routes}
+            self.endpoint_to_path = {
+                route.endpoint: route.path for route in request.app.routes
+            }
             logger.info(f"Initialize alias finder for {self.num_routes} routes")
-        if 'endpoint' in request.scope:
-            return self.endpoint_to_path.get(request.scope['endpoint'])
+        if "endpoint" in request.scope:
+            return self.endpoint_to_path.get(request.scope["endpoint"])
+
 
 def init_fastapi_app(
     app: FastAPI,
@@ -173,7 +186,11 @@ def init_fastapi_app(
 ) -> None:
 
     alias_finder = AliasFinder()
-    fastapi_plugins = plugins + [RequestCtxPlugin(), LoggerPlugging(), MetricsPlugging()]
+    fastapi_plugins = plugins + [
+        RequestCtxPlugin(),
+        LoggerPlugging(),
+        MetricsPlugging(),
+    ]
 
     @app.middleware("http")
     async def app_middleware(request: Request, call_next):
@@ -189,7 +206,10 @@ def init_fastapi_app(
             param = ".".join(str(x) for x in exc.exc.errors()[0]["loc"][1:])
             response = JSONResponse(
                 status_code=HttpErrors.INVALID_PARAM.status_code,
-                content={"msg": f"Invalid {location} param: {param}", "code": HttpErrors.INVALID_PARAM.code},
+                content={
+                    "msg": f"Invalid {location} param: {param}",
+                    "code": HttpErrors.INVALID_PARAM.code,
+                },
             )
         except WebAppException as exc:
             if exc.show_stack:
@@ -203,17 +223,22 @@ def init_fastapi_app(
         except Exception as exc:
             logger.exception(f"Interal Server Error: {exc}")
             response = JSONResponse(
-                    status_code=HttpErrors.INTERNAL_SERVER_ERROR.status_code,
-                    content={"code": HttpErrors.INTERNAL_SERVER_ERROR.code,
-                             "msg": "Internal Server Error"},
-                )
+                status_code=HttpErrors.INTERNAL_SERVER_ERROR.status_code,
+                content={
+                    "code": HttpErrors.INTERNAL_SERVER_ERROR.code,
+                    "msg": "Internal Server Error",
+                },
+            )
 
         exec_time = time.time() - start
 
         for plugin in fastapi_plugins:
-            plugin.on_after(request, response, exec_time, alias_finder.get_alias(request))
+            plugin.on_after(
+                request, response, exec_time, alias_finder.get_alias(request)
+            )
 
         return response
+
 
 def create_openapi_schema(
     title,
@@ -223,10 +248,9 @@ def create_openapi_schema(
 ) -> dict:
     from fastapi.openapi.utils import get_openapi
 
-    openapi_schema = get_openapi(title=title,
-                                 description=description,
-                                 version=version,
-                                 routes=routes)
+    openapi_schema = get_openapi(
+        title=title, description=description, version=version, routes=routes
+    )
 
     # look for the error 422 and removes it
     for url in openapi_schema["paths"]:

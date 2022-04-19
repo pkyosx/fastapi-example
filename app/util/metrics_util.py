@@ -1,24 +1,21 @@
-from prometheus_client import Counter
-from prometheus_client import Gauge
-from prometheus_client import Info
-from prometheus_client import Summary
+from prometheus_client import Gauge, Info, Summary
 
 
 class Metrics(object):
     # Instance info
-    app = Info(
-        name='app',
-        documentation='Service information')
+    app = Info(name="app", documentation="Service information")
 
     # API Request metrics
     app_api_latency_seconds = Summary(
-        name='app_api_latency_seconds',
-        documentation='API request time in seconds',
-        labelnames=["method", "alias", "status_code"])
+        name="app_api_latency_seconds",
+        documentation="API request time in seconds",
+        labelnames=["method", "alias", "status_code"],
+    )
     app_api_connection_total = Gauge(
-        name='app_api_connection_total',
-        documentation='API concurrent connection count',
-        labelnames=[])
+        name="app_api_connection_total",
+        documentation="API concurrent connection count",
+        labelnames=[],
+    )
 
 
 def update_latest(version):
