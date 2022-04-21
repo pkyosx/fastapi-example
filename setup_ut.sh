@@ -5,7 +5,6 @@ docker-compose -p fastapi-sample -f docker-compose/ut.yml up -d
 echo "============================================="
 echo "To run all test: (run the following command)"
 echo "============================================="
-echo pip install -r requirements-test.txt
 echo pytest --log-level=INFO --sw tests/
 echo "============================================="
 echo

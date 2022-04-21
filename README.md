@@ -29,8 +29,7 @@ This will build container and lead you into container's shell
 
 Type following command inside container will trigger UT
 ```
-pip install -r requirements-test.txt
-pytest --log-level=INFO --sw tests/
+pytest --log-level=INFO --sw app/tests/
 ```
 
 Type following command inside container will start up a server on localhost:8888

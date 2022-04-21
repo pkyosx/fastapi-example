@@ -5,7 +5,7 @@ services:
     hostname: ut-service
     build: ${PWD}
     volumes:
-    - ${PWD}/app:/app
+    - ${PWD}:/workspace
     ports:
     - 8888:80
     entrypoint: "bash -c 'sleep infinity'"
