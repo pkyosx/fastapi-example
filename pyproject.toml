@@ -1,5 +1,5 @@
 [project]
-name = "app"
+name = "fastapi-example"
 authors = [
     {name = "Seth Wang", email = "pkyosx@gmail.com"},
 ]
@@ -26,6 +26,9 @@ test = [
     "pytest-mock==3.6.1",
     "believe==1.0.10",
 ]
+
+[tool.flit.module]
+name = "app"
 
 [build-system]
 requires = ["flit_core >=3.2,<4"]
