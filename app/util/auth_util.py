@@ -2,6 +2,7 @@ import time
 from dataclasses import dataclass
 
 import jwt
+
 from util.enum_util import EnumBase
 
 

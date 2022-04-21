@@ -1,6 +1,8 @@
-from controller.login_controller import LoginController
-from fastapi import APIRouter, Body
+from fastapi import APIRouter
+from fastapi import Body
 from fastapi.param_functions import Body
+
+from controller.login_controller import LoginController
 from util.fastapi_util import CommonAPIRoute
 
 public_api_router = APIRouter(tags=["PUBLIC"], route_class=CommonAPIRoute)

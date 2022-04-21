@@ -2,15 +2,21 @@ import contextvars
 import logging
 import time
 import uuid
-from typing import Callable, Protocol
+from typing import Callable
+from typing import Protocol
 
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI
+from fastapi import Request
+from fastapi import Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 from pydantic import BaseModel
-from util.http_error_util import HttpErrors, WebAppException
-from util.log_util import clear_log_ctx, update_log_ctx
+
+from util.http_error_util import HttpErrors
+from util.http_error_util import WebAppException
+from util.log_util import clear_log_ctx
+from util.log_util import update_log_ctx
 from util.metrics_util import Metrics
 
 logger = logging.getLogger(__name__)

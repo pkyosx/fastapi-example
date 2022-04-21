@@ -2,13 +2,15 @@ import logging
 from functools import partial
 
 import prometheus_client
+from fastapi import FastAPI
+from fastapi.responses import PlainTextResponse
+
 from api.admin_api import admin_api_router
 from api.public_api import public_api_router
 from api.user_api import user_api_router
-from fastapi import FastAPI
-from fastapi.responses import PlainTextResponse
 from util.config_util import Config
-from util.fastapi_util import create_openapi_schema, init_fastapi_app
+from util.fastapi_util import create_openapi_schema
+from util.fastapi_util import init_fastapi_app
 
 logger = logging.getLogger(__name__)
 

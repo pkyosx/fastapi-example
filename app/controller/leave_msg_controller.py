@@ -1,7 +1,9 @@
+from pydantic.fields import Field
+
 from controller.base_controller import RbacControllerBase
 from model.msg_model import MsgModel
-from pydantic.fields import Field
-from util.auth_util import Identity, Perm
+from util.auth_util import Identity
+from util.auth_util import Perm
 from util.fastapi_util import BaseSchema
 
 

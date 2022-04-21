@@ -1,4 +1,6 @@
-from prometheus_client import Gauge, Info, Summary
+from prometheus_client import Gauge
+from prometheus_client import Info
+from prometheus_client import Summary
 
 
 class Metrics(object):

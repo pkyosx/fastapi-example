@@ -4,7 +4,9 @@ import logging
 import pytest
 
 from model.msg_model import MsgModel
-from util.auth_util import Identity, JWTAuthenticator, Role
+from util.auth_util import Identity
+from util.auth_util import JWTAuthenticator
+from util.auth_util import Role
 from util.config_util import Config
 
 logger = logging.getLogger(__name__)

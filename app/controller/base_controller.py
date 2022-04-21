@@ -2,12 +2,17 @@ import abc
 import logging
 
 from fastapi import Depends
-from fastapi.security.http import HTTPAuthorizationCredentials, HTTPBearer
-from util.auth_util import Identity, JWTAuthenticator, Perm
+from fastapi.security.http import HTTPAuthorizationCredentials
+from fastapi.security.http import HTTPBearer
+
+from util.auth_util import Identity
+from util.auth_util import JWTAuthenticator
+from util.auth_util import Perm
 from util.config_util import Config
 from util.enum_util import EnumBase
 from util.fastapi_util import BaseSchema
-from util.http_error_util import HttpErrors, gen_error_responses
+from util.http_error_util import HttpErrors
+from util.http_error_util import gen_error_responses
 
 logger = logging.getLogger(__name__)
 

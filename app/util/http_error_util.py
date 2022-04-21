@@ -1,6 +1,7 @@
 from enum import Enum
 
 from pydantic import create_model
+
 from util.enum_util import EnumBase
 
 

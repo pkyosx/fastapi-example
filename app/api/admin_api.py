@@ -1,5 +1,8 @@
+from fastapi import APIRouter
+from fastapi import Body
+from fastapi import Depends
+
 from controller.leave_msg_controller import LeaveMsgController
-from fastapi import APIRouter, Body, Depends
 from util.auth_util import Identity
 from util.fastapi_util import CommonAPIRoute
 

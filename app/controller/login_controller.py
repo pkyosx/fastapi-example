@@ -1,6 +1,9 @@
-from controller.base_controller import ControllerBase
 from pydantic import Field
-from util.auth_util import Identity, JWTAuthenticator, Role
+
+from controller.base_controller import ControllerBase
+from util.auth_util import Identity
+from util.auth_util import JWTAuthenticator
+from util.auth_util import Role
 from util.config_util import Config
 from util.fastapi_util import BaseSchema
 from util.http_error_util import HttpErrors

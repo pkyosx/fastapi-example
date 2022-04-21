@@ -1,5 +1,8 @@
+from fastapi import APIRouter
+from fastapi import Body
+from fastapi import Depends
+
 from controller.read_msgs_controller import ReadMsgsController
-from fastapi import APIRouter, Body, Depends
 from util.auth_util import Identity
 from util.fastapi_util import CommonAPIRoute
 

@@ -1,6 +1,6 @@
 import pytest
-
 from fastapi.testclient import TestClient
+
 from init import init_app
 from model.msg_model import MsgModel
 
