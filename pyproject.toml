@@ -1,38 +1,26 @@
-[project]
+[tool.poetry]
 name = "fastapi-example"
-authors = [
-    {name = "Seth Wang", email = "pkyosx@gmail.com"},
-]
-readme = "README.md"
-classifiers = [
-    "License :: OSI Approved :: MIT License",
-]
-requires-python = ">=3.9"
 version = "1.0"
 description = "A sample fastapi web app"
-dependencies = [
-    "gunicorn==20.0.4",
-    "uvicorn==0.14.0",
-    "fastapi==0.68.0",
-    "requests==2.24.0",
-    "PyJWT==2.2.0",
-    "prometheus_client==0.14.0",
-]
+authors = ["Seth Wang <pkyosx@gmail.com>"]
+license = "MIT"
 
-[project.optional-dependencies]
-test = [
-    "pytest==6.2.5",
-    "pytest-cov==3.0.0",
-    "pytest-mock==3.6.1",
-    "believe==1.0.10",
-]
-
-[tool.flit.module]
-name = "app"
+[tool.poetry.dependencies]
+python = "^3.10"
+gunicorn = "^20.1.0"
+uvicorn = "^0.17.6"
+fastapi = "^0.75.2"
+requests = "^2.27.1"
+PyJWT = "^2.3.0"
+prometheus-client = "^0.14.1"
+believe = {version = "^1.0.12", extras = ["test"]}
+pytest = {version = "^7.1.1", extras = ["test"]}
+pytest-cov = {version = "^3.0.0", extras = ["test"]}
+pytest-mock = {version = "^3.7.0", extras = ["test"]}
 
 [build-system]
-requires = ["flit_core >=3.2,<4"]
-build-backend = "flit_core.buildapi"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.isort]
 profile = "black"
