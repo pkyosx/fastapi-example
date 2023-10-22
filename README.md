@@ -22,26 +22,35 @@ You can search the above question in source code for the answers. (ex. search "[
 # How to run local test
 Install [docker-compose](https://docs.docker.com/compose/install/) before continue the following step.
 
-This will build container and lead you into container's shell
+This will build container
 ```
-./setup_ut.sh
-```
-
-Type following command inside container will trigger UT
-```
-pytest --log-level=INFO --sw app/tests/
+make build
 ```
 
-Type following command inside container will start up a server on localhost:8888
+This will start the server on http://localhost:9999 you can find the api doc on http://localhost:9999/api_doc/swagger
 ```
-gunicorn main:app
-```
-
-```
-visit: http://localhost:8888/api_doc/swagger
+make up FASTAPI_EXAMPLE_PORT=9999
 ```
 
-To remove the container
+This will help you get into the server shell
 ```
-./teardown_ut.sh
+make attach
+```
+
+You can run the unit test
+```
+make test
+```
+
+To tear down all the resource
+```
+make down
+```
+
+# How to change code
+Install [pre-commit](https://pre-commit.com/) to align the code formatting
+
+Enable pre-commit and you are good to go
+```
+pre-commit install
 ```

@@ -1,9 +1,11 @@
 # first stage
 FROM python:3.10.10-slim
 
-WORKDIR /workspace/fastapi_example
-COPY . /workspace
-RUN pip install -e /workspace/.[test]
+WORKDIR /workspace
+COPY requirements.txt /workspace
+RUN pip install -r requirements.txt
+
+COPY . /workspace/
 ENV PYTHONPATH /workspace/fastapi_example
 
-ENTRYPOINT ["gunicorn", "main:app"]
+CMD [ "sleep", "infinity" ]

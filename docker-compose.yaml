@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  fastapi-server:
+    image: ${IMAGE:-"fastapi-example:latest"}
+    volumes:
+    - ${PWD}:/workspace
+    ports:
+    - ${FASTAPI_EXAMPLE_PORT:-"8888"}:80
+    entrypoint: ["./fastapi_example/bin/entrypoint-server.sh"]

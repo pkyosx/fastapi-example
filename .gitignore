@@ -136,3 +136,7 @@ dmypy.json
 .envrc
 .tool-versions
 .direnv
+
+# temporary files
+requirements.txt
+requirements-dev.txt
