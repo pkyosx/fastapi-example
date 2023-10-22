@@ -1,5 +1,5 @@
 # first stage
-FROM python:3.10-slim
+FROM python:3.10.10-slim
 
 WORKDIR /workspace/fastapi_example
 COPY . /workspace
