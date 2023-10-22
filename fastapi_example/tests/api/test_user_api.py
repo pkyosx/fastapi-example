@@ -2,8 +2,7 @@ import json
 import logging
 
 import pytest
-
-from model.msg_model import MsgModel
+from fastapi_example.crud import create_message
 from util.auth_util import Identity
 from util.auth_util import JWTAuthenticator
 from util.auth_util import Role
@@ -30,10 +29,10 @@ class TestReadMsgs:
             url=self.path, data=json.dumps(payload), headers=headers
         )
 
-    def test__ok(self):
+    def test__ok(self, session):
         # prepare fixture
-        MsgModel.leave_msg("hello")
-        MsgModel.leave_msg("world")
+        create_message(session, "hello")
+        create_message(session, "world")
 
         # user read two messages
         resp = self.trigger_run(Role.USER, {})

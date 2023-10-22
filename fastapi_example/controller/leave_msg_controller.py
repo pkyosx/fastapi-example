@@ -1,7 +1,7 @@
-from pydantic.fields import Field
-
 from controller.base_controller import RbacControllerBase
-from model.msg_model import MsgModel
+from crud import create_message
+from pydantic.fields import Field
+from sqlalchemy.orm import Session
 from util.auth_util import Identity
 from util.auth_util import Perm
 from util.fastapi_util import BaseSchema
@@ -21,6 +21,8 @@ class LeaveMsgController(RbacControllerBase):
     perm = Perm.WRITE_MSG
 
     @classmethod
-    def run(cls, identity: Identity, payload: request_model) -> response_model:
-        MsgModel.leave_msg(payload.msg)
+    def run(
+        cls, session: Session, identity: Identity, payload: request_model
+    ) -> response_model:
+        create_message(session, payload.msg)
         return cls.response_model(**{"result": "ok"})

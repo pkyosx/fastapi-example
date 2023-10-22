@@ -7,4 +7,12 @@ services:
     - ${PWD}:/workspace
     ports:
     - ${FASTAPI_EXAMPLE_PORT:-"8888"}:80
+    environment:
+      SQLALCHEMY_DATABASE_URL: postgresql://root:password@fastapi-db/db
     entrypoint: ["./fastapi_example/bin/entrypoint-server.sh"]
+  fastapi-db:
+    image: postgres:13.3-alpine
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db

@@ -11,8 +11,8 @@ from fastapi import Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
+from fastapi_example.util.sqlalchemy_util import create_session
 from pydantic import BaseModel
-
 from util.http_error_util import HttpErrors
 from util.http_error_util import WebAppException
 from util.log_util import clear_log_ctx
@@ -268,3 +268,8 @@ def create_openapi_schema(
             except KeyError:
                 pass
     return openapi_schema
+
+
+def get_session():
+    with create_session() as session:
+        yield session
