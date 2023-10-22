@@ -190,7 +190,6 @@ def init_fastapi_app(
     app: FastAPI,
     plugins: list[FastAPIPlugin] = [],
 ) -> None:
-
     alias_finder = AliasFinder()
     fastapi_plugins = plugins + [
         RequestCtxPlugin(),

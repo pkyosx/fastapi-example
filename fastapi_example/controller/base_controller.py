@@ -23,7 +23,6 @@ DEFAULT_MODULE_ARGS = {
 
 
 class ControllerBase(abc.ABC):
-
     request_schema = BaseSchema
     response_schema = BaseSchema
 
@@ -81,7 +80,7 @@ class RbacControllerBase(abc.ABC):
             identity = JWTAuthenticator.load_access_token(
                 key=Config.auth_secret_key, access_token=access_jwt
             )
-        except:
+        except Exception:
             # [Q7] How to print the entire exception chain when wanted
             raise cls.Errors.UNAUTHENTICATED("Invalid JWT", show_stack=True)
 
