@@ -1,8 +1,8 @@
-from fastapi_example.util.sqlalchemy_util import get_engine
 from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy.orm import declarative_base
+from util.sqlalchemy_util import get_engine
 
 BaseModel = declarative_base()
 

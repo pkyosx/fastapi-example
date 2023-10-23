@@ -9,9 +9,35 @@ services:
     - ${FASTAPI_EXAMPLE_PORT:-8888}:80
     environment:
       SQLALCHEMY_DATABASE_URL: postgresql://root:password@fastapi-db/db
+      PGHOST: fastapi-db
+      PGUSER: root
+      PGPASSWORD: password
+      PGDATABASE: db
     entrypoint: ["./fastapi_example/bin/entrypoint-server.sh"]
+    depends_on:
+      fastapi-migrate:
+        condition: service_completed_successfully
+  fastapi-migrate:
+    image: ${IMAGE:-"fastapi-example:latest"}
+    volumes:
+    - ${PWD}:/workspace
+    environment:
+      SQLALCHEMY_DATABASE_URL: postgresql://root:password@fastapi-db/db
+      PGHOST: fastapi-db
+      PGUSER: root
+      PGPASSWORD: password
+      PGDATABASE: db
+    entrypoint: ["./fastapi_example/bin/entrypoint-migrate.sh"]
+    depends_on:
+      fastapi-db:
+        condition: service_healthy
   fastapi-db:
     image: postgres:13.3-alpine
+    healthcheck:
+      test: pg_isready
+      interval: 5s
+      timeout: 5s
+      retries: 10
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
